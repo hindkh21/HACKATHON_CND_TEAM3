@@ -18,11 +18,16 @@ const LogHistory: React.FC<LogHistoryProps> = ({ requests }) => {
 
   return (
     <div className="space-y-4 pb-8">
-      {displayedRequests.map((request) => (
-        <div key={`${request.index}-${request.timestamp.getTime()}`}>
-          <RequestCard request={request} />
-        </div>
-      ))}
+      {displayedRequests.map((request) => {
+        const timestampKey = typeof request.timestamp === 'string'
+          ? request.timestamp
+          : request.timestamp.getTime();
+        return (
+          <div key={`${request.index}-${timestampKey}`}>
+            <RequestCard request={request} />
+          </div>
+        );
+      })}
 
       {displayedRequests.length === 0 && (
         <div className="flex items-center justify-center h-64 text-muted-foreground">

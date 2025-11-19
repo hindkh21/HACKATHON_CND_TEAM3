@@ -59,9 +59,10 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
                           request.severity.toLowerCase() === 'moyen' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-green-100 text-green-800';
 
-  const getRelativeTime = (timestamp: Date) => {
+  const getRelativeTime = (timestamp: Date | string) => {
     const now = new Date();
-    const diffMs = now.getTime() - timestamp.getTime();
+    const ts = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    const diffMs = now.getTime() - ts.getTime();
     const diffSecs = Math.floor(diffMs / 1000);
     const diffMins = Math.floor(diffSecs / 60);
     const diffHours = Math.floor(diffMins / 60);
@@ -73,8 +74,9 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
     return `Il y a ${diffDays}j`;
   };
 
-  const formatFullTime = (timestamp: Date) => {
-    return timestamp.toLocaleString('fr-FR', {
+  const formatFullTime = (timestamp: Date | string) => {
+    const ts = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    return ts.toLocaleString('fr-FR', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

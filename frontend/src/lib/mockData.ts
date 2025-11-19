@@ -10,13 +10,23 @@ const bugTypes = [
   null,
 ];
 
+// Map each attack type to a specific severity level
+const bugTypeSeverity: Record<string, string> = {
+  'port_scan': 'faible',
+  'brut_force_ssh': 'élevé',
+  'xss': 'moyen',
+  'malware_download': 'élevé',
+  'ddos': 'élevé',
+  'sql_injection': 'élevé',
+};
+
 const bugTypeExplanations: Record<string, string> = {
-  'port_scan': 'Scan de ports — activité de reconnaissance.',
-  'brut_force_ssh': 'Brute-force SSH — tentative de compromission de comptes.',
-  'xss': 'Tentative XSS — attaque applicative visant scripts côté client.',
-  'malware_download': 'Téléchargement malveillant — risque d\'infection.',
-  'ddos': 'Potentiel DDoS détecté — schéma de volume ou de fréquence malveillant.',
-  'sql_injection': 'Tentative d\'injection SQL — attaque applicative critique.',
+  'port_scan': 'Quelqu\'un essaie de trouver les portes d\'entrée ouvertes de votre système informatique, comme un cambrioleur qui teste les fenêtres d\'une maison.',
+  'brut_force_ssh': 'Un attaquant tente de deviner votre mot de passe en essayant des milliers de combinaisons différentes, comme quelqu\'un qui essaierait toutes les clés possibles sur une serrure.',
+  'xss': 'Un pirate essaie d\'injecter du code malveillant dans votre site web pour voler des informations de vos visiteurs, comme glisser un faux formulaire dans votre boîte aux lettres.',
+  'malware_download': 'Un fichier dangereux tente d\'être téléchargé sur votre système, comme un virus qui pourrait infecter votre ordinateur et voler vos données.',
+  'ddos': 'Votre système reçoit une avalanche de demandes simultanées pour le faire tomber, comme si des milliers de personnes entraient en même temps dans un magasin pour le bloquer.',
+  'sql_injection': 'Un pirate tente de manipuler votre base de données en insérant des commandes malveillantes, comme modifier les prix dans le système d\'une caisse enregistreuse.',
 };
 
 const bugTypeFixes: Record<string, string> = {
@@ -37,8 +47,8 @@ const firewallPrefixes = ['FW', 'SEC', 'GUARD', 'SHIELD'];
 let requestIndex = 1;
 
 export const generateMockRequest = (): Request => {
-  const severity = severityLevels[Math.floor(Math.random() * severityLevels.length)];
   const bugType = bugTypes[Math.floor(Math.random() * bugTypes.length)];
+  const severity = bugType ? bugTypeSeverity[bugType] : severityLevels[Math.floor(Math.random() * severityLevels.length)];
   const type = requestTypes[Math.floor(Math.random() * requestTypes.length)];
   const prefix = firewallPrefixes[Math.floor(Math.random() * firewallPrefixes.length)];
 
@@ -122,5 +132,15 @@ export const initialMockRequests: Request[] = [
     explanation: bugTypeExplanations['ddos'],
     type: 'Réseau',
     fix_proposal: bugTypeFixes['ddos'],
+  },
+  {
+    index: requestIndex++,
+    firewall_id: 'FW-006',
+    timestamp: new Date('2025-11-19T10:25:00Z'),
+    bug_type: 'malware_download',
+    severity: 'élevé',
+    explanation: bugTypeExplanations['malware_download'],
+    type: 'Sécurité',
+    fix_proposal: bugTypeFixes['malware_download'],
   },
 ];

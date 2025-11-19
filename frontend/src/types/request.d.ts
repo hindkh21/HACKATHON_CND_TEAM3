@@ -1,7 +1,7 @@
 type Request = {
 	index: number;
 	firewall_id: string;
-	timestamp: Date;
+	timestamp: string | Date;
 	bug_type: string | null;
 	severity: string;
 	explanation: string | null;
