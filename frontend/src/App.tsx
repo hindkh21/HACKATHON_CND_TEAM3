@@ -18,25 +18,37 @@ function App() {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:9001';
+    console.log('🔌 Connecting to WebSocket:', wsUrl);
+    console.log('🔌 VITE_WS_URL env var:', import.meta.env.VITE_WS_URL);
     connectWebSocket(wsUrl);
 
     // Check connection status
     const checkConnection = setInterval(() => {
-      setWsConnected(isWebSocketConnected());
+      const connected = isWebSocketConnected();
+      setWsConnected(connected);
+      if (connected) {
+        console.log('✅ WebSocket is connected');
+      }
     }, 1000);
 
     // Listen for new requests from WebSocket
     const unsubscribe = onWebSocketMessage((message: WebSocketMessage) => {
       if (message.type === 'new_request' && message.data) {
-        setRequests((prev) => [message.data as Request, ...prev].slice(0, 50));
+        const requestData = message.data as Request;
+        // Convert timestamp string to Date object if needed
+        if (typeof requestData.timestamp === 'string') {
+          requestData.timestamp = new Date(requestData.timestamp);
+        }
+        setRequests((prev) => [requestData, ...prev].slice(0, 50));
       }
     });
 
     return () => {
       clearInterval(checkConnection);
       unsubscribe();
-      disconnectWebSocket();
+      // Don't disconnect WebSocket on unmount to avoid issues with React StrictMode
+      // disconnectWebSocket();
     };
   }, []);
 
@@ -111,7 +123,9 @@ function App() {
                 Surveillance en temps réel des alertes de sécurité et des activités du pare-feu
               </p>
             </div>
+          </div>
 
+			{/*
             <Button
               onClick={toggleSimulation}
               variant={isSimulating ? 'destructive' : 'default'}
@@ -123,7 +137,7 @@ function App() {
               />
               {isSimulating ? 'Arrêter la simulation' : 'Démarrer la simulation'}
             </Button>
-          </div>
+		  */}
 
           {/* Live indicator */}
           {isSimulating && (
@@ -143,9 +157,13 @@ function App() {
 
           {/* WebSocket status */}
           <div className="flex items-center gap-2 text-sm">
-            <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
+            <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
             <span className="text-muted-foreground">
-              {wsConnected ? 'WebSocket connecté' : 'WebSocket déconnecté'}
+              {wsConnected ? (
+                <span>Connexion avec le proxy en direct</span>
+              ) : (
+                <span>Déconnecté du proxy,&nbsp;<a href='/contact'>Contacter le support</a></span>
+              )}
             </span>
           </div>
         </motion.div>
