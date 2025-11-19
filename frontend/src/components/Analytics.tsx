@@ -14,7 +14,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ requests }) => {
     faible: requests.filter(r => r.severity.toLowerCase() === 'faible').length,
   };
 
-  const total = requests.length || 1;
+  const total = requests.length || 0;
   const severityPercentages = {
     élevé: Math.round((severityStats.élevé / total) * 100),
     moyen: Math.round((severityStats.moyen / total) * 100),

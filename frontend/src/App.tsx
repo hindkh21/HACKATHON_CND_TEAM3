@@ -5,15 +5,13 @@ import type Request from './types/request';
 import LogHistory from './components/LogHistory';
 import LogStats from './components/LogStats';
 import Analytics from './components/Analytics';
-import { Button } from './components/lightswind/button';
-import { initialMockRequests, generateMockRequest } from './lib/mockData';
-import { connectWebSocket, disconnectWebSocket, onWebSocketMessage, isWebSocketConnected, type WebSocketMessage } from './lib/websocket';
+import Chatbot from './components/Chatbot';
+import { connectWebSocket, onWebSocketMessage, isWebSocketConnected, type WebSocketMessage } from './lib/websocket';
 import logoArmees from './assets/Ministère_des_Armées.svg.png';
 import './App.css';
 
 function App() {
-  const [requests, setRequests] = useState<Request[]>(initialMockRequests);
-  const [isSimulating, setIsSimulating] = useState(false);
+  const [requests, setRequests] = useState<Request[]>([]);
   const [wsConnected, setWsConnected] = useState(false);
 
   // Initialize WebSocket connection
@@ -36,11 +34,23 @@ function App() {
     const unsubscribe = onWebSocketMessage((message: WebSocketMessage) => {
       if (message.type === 'new_request' && message.data) {
         const requestData = message.data as Request;
+
         // Convert timestamp string to Date object if needed
         if (typeof requestData.timestamp === 'string') {
           requestData.timestamp = new Date(requestData.timestamp);
         }
-        setRequests((prev) => [requestData, ...prev].slice(0, 50));
+
+        // Add to requests - duplicates will be filtered by unique index
+        setRequests((prev) => {
+          // Check if this index already exists
+          const exists = prev.some(r => r.index === requestData.index);
+          if (exists) {
+            console.log(`⏭️ Skipping duplicate request #${requestData.index}`);
+            return prev;
+          }
+          console.log(`📥 Accepted request #${requestData.index}`);
+          return [requestData, ...prev];
+        });
       }
     });
 
@@ -51,22 +61,6 @@ function App() {
       // disconnectWebSocket();
     };
   }, []);
-
-  // Simulate receiving new requests (for demo purposes)
-  useEffect(() => {
-    if (!isSimulating) return;
-
-    const interval = setInterval(() => {
-      const newRequest = generateMockRequest();
-      setRequests((prev) => [newRequest, ...prev].slice(0, 50)); // Keep last 50 requests
-    }, 3000); // Generate a new request every 3 seconds
-
-    return () => clearInterval(interval);
-  }, [isSimulating]);
-
-  const toggleSimulation = () => {
-    setIsSimulating(!isSimulating);
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -86,12 +80,12 @@ function App() {
       {/* Navigation Bar */}
       <nav className="sticky top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="px-4 md:px-8">
-          <div className="flex items-center justify-between h-24">
+          <div className="flex items-center justify-between h-32">
             <div className="flex items-center gap-4">
               <img
                 src={logoArmees}
                 alt="Ministère des Armées"
-                className="h-20 w-auto"
+                className="h-32 w-auto"
               />
             </div>
             <a
@@ -139,22 +133,6 @@ function App() {
             </Button>
 		  */}
 
-          {/* Live indicator */}
-          {isSimulating && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-2 text-sm"
-            >
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="w-2 h-2 bg-red-500 rounded-full"
-              />
-              <span className="text-muted-foreground">Surveillance en direct active</span>
-            </motion.div>
-          )}
-
           {/* WebSocket status */}
           <div className="flex items-center gap-2 text-sm">
             <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -187,6 +165,9 @@ function App() {
         </div>
         </div>
       </div>
+
+      {/* Chatbot */}
+      <Chatbot requests={requests} />
     </div>
   );
 }

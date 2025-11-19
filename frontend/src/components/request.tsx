@@ -8,6 +8,7 @@ interface RequestCardProps {
 
 const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
   const [showSolution, setShowSolution] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [isApplied, setIsApplied] = useState(false);
   const [error, setError] = useState(false);
@@ -86,8 +87,18 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
     });
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't open details if clicking on a button or link
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
+    setShowDetails(true);
+  };
+
   return (
     <div
+      onClick={handleCardClick}
       className="w-full mb-4 p-6 bg-white rounded-xl border-l-4 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer"
       style={{ borderLeftColor: borderColor }}
     >
@@ -158,7 +169,10 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
 
           {request.fix_proposal && (
             <button
-              onClick={() => setShowSolution(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSolution(true);
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shrink-0"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,6 +183,152 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
           )}
         </div>
       </div>
+
+      {/* Details Modal */}
+      {showDetails && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowDetails(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Détails de la requête</h2>
+                    <p className="text-sm text-gray-500">Requête #{request.index}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDetails(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="px-6 py-6 space-y-6">
+              {/* Status & Type */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className={`px-4 py-2 rounded-lg text-sm font-semibold uppercase ${severityBgColor}`}>
+                  {request.severity}
+                </span>
+                <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
+                  {request.type}
+                </span>
+              </div>
+
+              {/* Firewall & Time Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-900">Pare-feu</span>
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">{request.firewall_id}</p>
+                </div>
+
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-900">Horodatage</span>
+                  </div>
+                  <p className="text-sm text-gray-700">{formatFullTime(request.timestamp)}</p>
+                  <p className="text-xs text-gray-500 mt-1">{getRelativeTime(request.timestamp)}</p>
+                </div>
+              </div>
+
+              {/* Bug Type */}
+              {request.bug_type && (
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-red-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-red-900 mb-1">Type d'anomalie détectée</p>
+                      <p className="text-sm text-red-800">{request.bug_type}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Explanation */}
+              {request.explanation && (
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-blue-900 mb-1">Explication détaillée</p>
+                      <p className="text-sm text-blue-800 leading-relaxed">{request.explanation}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Fix Proposal */}
+              {request.fix_proposal && (
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-green-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-green-900 mb-2">Solution proposée</p>
+                      <p className="text-sm text-green-800 leading-relaxed">{request.fix_proposal}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setShowDetails(false)}
+                  className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Fermer
+                </button>
+                {request.fix_proposal && (
+                  <button
+                    onClick={() => {
+                      setShowDetails(false);
+                      setShowSolution(true);
+                    }}
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Voir la solution
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Solution Modal */}
       {showSolution && request.fix_proposal && (

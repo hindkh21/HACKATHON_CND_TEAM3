@@ -32,6 +32,7 @@ USE_LOCAL_MODEL = os.getenv("USE_LOCAL_MODEL", "true").lower() in ("1", "true", 
 # Global state
 request_counter = 1
 connected_clients: Set[ServerConnection] = set()
+processed_log_hashes: Set[int] = set()  # Track processed log lines to avoid duplicates
 
 # Bug type to category mapping
 BUG_TYPE_CATEGORIES = {
@@ -351,6 +352,22 @@ async def worker(name: int, queue: asyncio.Queue, session: aiohttp.ClientSession
     while True:
         log_line = await queue.get()
         try:
+            # Check for duplicates using hash
+            log_hash = hash(log_line)
+            if log_hash in processed_log_hashes:
+                logging.debug(f"Worker {name}: Skipping duplicate log line")
+                queue.task_done()
+                continue
+
+            processed_log_hashes.add(log_hash)
+
+            # Keep set size manageable (last 10000 hashes)
+            if len(processed_log_hashes) > 10000:
+                # Remove oldest (convert to list, pop first, convert back)
+                temp_list = list(processed_log_hashes)
+                processed_log_hashes.clear()
+                processed_log_hashes.update(temp_list[1000:])
+
             logging.debug(f"Worker {name} analyzing: {log_line}")
 
             model_result = await call_model(session, log_line)

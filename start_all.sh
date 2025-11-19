@@ -40,6 +40,8 @@ cleanup() {
 
     # Nettoyer les fichiers temporaires
     rm -f /tmp/firewall_monitor.pid
+	> app.log
+
 
     echo ""
     echo "✅ Tous les processus arrêtés proprement"
@@ -48,33 +50,20 @@ cleanup() {
 
 trap cleanup SIGINT SIGTERM
 
-# Fonction pour trouver un port disponible
-find_available_port() {
-    for port in {9001..9020}; do
-        if ! lsof -i :$port > /dev/null 2>&1; then
-            echo $port
-            return 0
-        fi
-    done
-    return 1
-}
+# Port fixe hardcodé
+PORT=9001
 
 # Nettoyage initial
 echo "🧹 Nettoyage des processus existants..."
 pkill -f integrated_watcher.py 2>/dev/null || true
 pkill -f generate_test_logs.py 2>/dev/null || true
-sleep 1
 
-# Trouver un port disponible
-echo "🔍 Recherche d'un port disponible..."
-PORT=$(find_available_port)
+# Nettoyer le port 9001 si occupé
+echo "🔌 Libération du port $PORT..."
+lsof -ti:$PORT | xargs kill -9 2>/dev/null || true
+sleep 2
 
-if [ -z "$PORT" ]; then
-    echo "❌ Aucun port disponible trouvé entre 9001-9020"
-    exit 1
-fi
-
-echo "✅ Port $PORT trouvé"
+echo "✅ Utilisation du port $PORT"
 echo ""
 
 # Vérifier les dépendances backend
@@ -100,20 +89,17 @@ echo "📝 Configuration du port $PORT..."
 # Frontend .env
 cat > frontend/.env << EOF
 # WebSocket Configuration
-VITE_WS_URL=ws://localhost:$PORT
+VITE_WS_URL=ws://localhost:9001
 
 # API Configuration (if needed in the future)
-VITE_API_URL=http://localhost:$PORT
+VITE_API_URL=http://localhost:9001
 EOF
-
-# Backup et mise à jour websocket.ts (au cas où .env ne marche pas)
-sed -i.bak "s|ws://localhost:[0-9]*|ws://localhost:$PORT|g" frontend/src/lib/websocket.ts 2>/dev/null || true
 
 echo "✅ Configuration mise à jour"
 echo ""
 
-# Exporter le port pour le backend
-export WEBSOCKET_PORT=$PORT
+# Exporter le port pour le backend (même si hardcodé)
+export WEBSOCKET_PORT=9001
 
 # ============================================
 # DÉMARRAGE DES SERVICES
@@ -125,7 +111,7 @@ echo "=============================================="
 echo ""
 
 # Démarrer le serveur WebSocket
-echo "   📡 Serveur WebSocket sur port $PORT..."
+echo "   📡 Serveur WebSocket sur port 9001..."
 cd backend
 ./venv/bin/python integrated_watcher.py > watcher.log 2>&1 &
 WATCHER_PID=$!
@@ -134,7 +120,7 @@ cd ..
 sleep 2
 
 # Vérifier que le serveur a démarré
-if ! lsof -i :$PORT > /dev/null 2>&1; then
+if ! lsof -i :9001 > /dev/null 2>&1; then
     echo "   ❌ Le serveur n'a pas démarré"
     echo ""
     echo "Logs:"
@@ -186,7 +172,7 @@ echo "✅ SYSTÈME OPÉRATIONNEL"
 echo "=============================================="
 echo ""
 echo "📊 Services actifs:"
-echo "   • WebSocket Server:  ws://localhost:$PORT (PID: $WATCHER_PID)"
+echo "   • WebSocket Server:  ws://localhost:9001 (PID: $WATCHER_PID)"
 echo "   • Log Generator:     PID: $GENERATOR_PID"
 echo "   • Frontend Dev:      http://localhost:5173 (PID: $FRONTEND_PID)"
 echo ""
