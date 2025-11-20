@@ -2,6 +2,13 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 
+# Declare build arguments
+ARG VITE_WS_URL
+ARG VITE_API_URL
+ARG VITE_OVH_LLM_API_KEY
+ARG VITE_OVH_LLM_ENDPOINT
+ARG VITE_OVH_LLM_MODEL
+
 # Install dependencies
 COPY package.json package-lock.json* pnpm-lock.yaml* ./
 # If no lockfile is present, `npm ci` fails. Use `npm install` which works without a lockfile.

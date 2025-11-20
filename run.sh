@@ -19,7 +19,16 @@ cleanup() {
 # Capturer le signal SIGINT (Ctrl+C)
 trap cleanup SIGINT SIGTERM
 
-# Démarrer Docker Compose en mode détaché
+# Build et démarrer Docker Compose en mode détaché
+echo -e "${YELLOW}🔨 Construction des images Docker...${NC}"
+docker compose build
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}❌ Erreur lors de la construction des images${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✅ Images construites avec succès${NC}"
 docker compose up -d
 
 if [ $? -eq 0 ]; then

@@ -301,6 +301,40 @@ const RequestCard: React.FC<RequestCardProps> = ({ request, onRemoveRequest }) =
                 </div>
               </div>
 
+              {/* Network Information in Details Modal */}
+              {(request.src_ip || request.dst_ip) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {request.src_ip && (
+                    <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                        </svg>
+                        <span className="text-sm font-medium text-purple-900">IP Source</span>
+                      </div>
+                      <p className="text-lg font-bold text-purple-900">{request.src_ip}</p>
+                      {request.src_port && (
+                        <p className="text-sm text-purple-700 mt-1">Port: {request.src_port}</p>
+                      )}
+                    </div>
+                  )}
+                  {request.dst_ip && (
+                    <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                        <span className="text-sm font-medium text-indigo-900">IP Destination</span>
+                      </div>
+                      <p className="text-lg font-bold text-indigo-900">{request.dst_ip}</p>
+                      {request.dst_port && (
+                        <p className="text-sm text-indigo-700 mt-1">Port: {request.dst_port}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Bug Type */}
               {request.bug_type && (
                 <div className="p-4 bg-red-50 rounded-lg border border-red-200">

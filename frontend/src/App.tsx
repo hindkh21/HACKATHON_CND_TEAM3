@@ -175,7 +175,7 @@ function App() {
             <div className="space-y-2">
               <h1 className="text-4xl font-bold tracking-tight flex items-center gap-3">
                 <Icon icon="mdi:security" className="w-10 h-10" />
-                Moniteur de Pare-feu
+                Vigil
               </h1>
               <p className="text-muted-foreground text-lg">
                 Surveillance en temps réel des alertes de sécurité et des activités du pare-feu

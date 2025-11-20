@@ -1,4 +1,4 @@
-# 🛡️ Firewall Security Monitor - HACKATHON_CND_TEAM3
+# 🛡️ Vigil - Firewall Security Monitor
 
 Un système de surveillance de firewall en temps réel avec détection intelligente des menaces et suggestions de corrections automatisées.
 
@@ -317,7 +317,7 @@ echo "2025-11-19 10:00:00 FW-0001 [CRITICAL] SQL injection attempt detected" >> 
 
 ## 👥 Équipe
 
-**HACKATHON_CND_TEAM3**
+**Vigil**
 
 ## 📄 Licence
 
