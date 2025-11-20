@@ -44,16 +44,21 @@ A real-time firewall monitoring and security alert system with intelligent threa
 
 ## 🚀 Quick Start
 
-### Option 1: Automated Setup
+### Option 1: Automated Setup (Recommended)
 
-Run the setup script:
+The easiest way to start all services at once:
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+chmod +x start.sh
+./start.sh
 ```
 
-Then follow the on-screen instructions.
+This script will:
+- Start the backend WebSocket server
+- Start the log generator
+- Start the frontend development server
+
+All services will run in separate terminal windows.
 
 ### Option 2: Manual Setup
 
@@ -82,10 +87,11 @@ cd frontend
 npm install  # or: pnpm install
 
 # Create environment file
-cp .env.example .env
+cp .env.example .env.local
+# Edit .env.local with your configuration
 ```
 
-#### 3. Run the System
+#### 3. Run the System Manually
 
 **Terminal 1 - Start Backend:**
 ```bash
@@ -153,12 +159,23 @@ POLL_INTERVAL=0.2
 
 ### Frontend Configuration
 
-Edit `frontend/.env`:
+Create `frontend/.env.local` from the example:
 
 ```bash
-VITE_WS_URL=ws://localhost:8080
-VITE_API_URL=http://localhost:8080
+cp .env.example .env.local
 ```
+
+Edit `frontend/.env.local`:
+
+```bash
+VITE_WS_URL=ws://localhost:9001
+VITE_API_URL=http://localhost:9001/
+VITE_OVH_LLM_API_KEY=your_api_key_here
+VITE_OVH_LLM_ENDPOINT=https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions
+VITE_OVH_LLM_MODEL=Meta-Llama-3_3-70B-Instruct
+```
+
+**Note:** Replace `your_api_key_here` with your actual OVH Cloud AI API key.
 
 ## 🔍 Detected Threats
 
