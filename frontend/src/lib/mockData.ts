@@ -74,7 +74,11 @@ export const generateMockRequests = (count: number): Request[] => {
   for (let i = 0; i < count; i++) {
     requests.push(generateMockRequest());
   }
-  return requests.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  return requests.sort((a, b) => {
+    const timeA = typeof a.timestamp === 'string' ? new Date(a.timestamp).getTime() : a.timestamp.getTime();
+    const timeB = typeof b.timestamp === 'string' ? new Date(b.timestamp).getTime() : b.timestamp.getTime();
+    return timeB - timeA;
+  });
 };
 
 export const resetRequestIndex = () => {

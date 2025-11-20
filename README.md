@@ -1,22 +1,23 @@
 # 🛡️ Firewall Security Monitor - HACKATHON_CND_TEAM3
 
-A real-time firewall monitoring and security alert system with intelligent threat detection and automated fix suggestions.
+Un système de surveillance de firewall en temps réel avec détection intelligente des menaces et suggestions de corrections automatisées.
 
-## 🌟 Features
+## 🌟 Fonctionnalités
 
-- **Real-time Log Monitoring** - Continuously monitors firewall logs for security threats
-- **Intelligent Threat Detection** - Detects SQL injection, XSS, DDoS, brute force attacks, and more
-- **WebSocket Communication** - Real-time bidirectional communication between backend and frontend
-- **Interactive Dashboard** - Beautiful React interface with live updates
-- **Severity Classification** - Categorizes threats as "élevé" (high), "moyen" (medium), or "faible" (low)
-- **Automated Fix Proposals** - Suggests remediation steps for detected threats
-- **Visual Analytics** - Charts and statistics for threat analysis
+- **Surveillance des Logs en Temps Réel** - Surveille en continu les logs du firewall pour détecter les menaces de sécurité
+- **Détection Intelligente des Menaces** - Détecte les SQL injection, XSS, DDoS, attaques par force brute, et plus encore
+- **Communication WebSocket** - Communication bidirectionnelle en temps réel entre le backend et le frontend
+- **Dashboard Interactif** - Belle interface React avec mises à jour en direct
+- **Classification de Sévérité** - Catégorise les menaces comme "élevé", "moyen", ou "faible"
+- **Propositions de Corrections Automatisées** - Suggère des étapes de remédiation pour les menaces détectées
+- **Analytiques Visuelles** - Graphiques et statistiques pour l'analyse des menaces
+- **Help ChatBot** - Un ChatBot toujours disponible en cas d'insécurité ou d'incompréhension
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐      WebSocket      ┌──────────────────┐
-│   Log Files     │ ─────────────────▶  │   Backend        │
+┌─────────────────┐       Watch         ┌──────────────────┐
+│   Log Files     │ ─────────────────▶ │   Backend        │
 │   (app.log)     │                     │   (Python)       │
 └─────────────────┘                     │                  │
                                         │  - Log Watcher   │
@@ -24,7 +25,7 @@ A real-time firewall monitoring and security alert system with intelligent threa
                                         │  - WS Server     │
                                         └────────┬─────────┘
                                                  │
-                                          ws://localhost:8080
+                                          ws://localhost:9001
                                                  │
                                         ┌────────▼─────────┐
                                         │    Frontend      │
@@ -36,117 +37,117 @@ A real-time firewall monitoring and security alert system with intelligent threa
                                         └──────────────────┘
 ```
 
-## 📋 Prerequisites
+## 📋 Prérequis
 
-- **Python 3.8+** - For backend services
-- **Node.js 18+** - For frontend development
-- **npm or pnpm** - Package manager
+- **Python 3.8+** - Pour les services backend
+- **Node.js 18+** - Pour le développement frontend
+- **npm or pnpm** - Gestionnaire de paquets
 
-## 🚀 Quick Start
+## 🚀 Démarrage Rapide
 
-### Option 1: Automated Setup (Recommended)
+### Option 1: Configuration Automatisée (Recommandée)
 
-The easiest way to start all services at once:
+La façon la plus simple de démarrer tous les services à la fois :
 
 ```bash
 chmod +x start.sh
 ./start.sh
 ```
 
-This script will:
-- Start the backend WebSocket server
-- Start the log generator
-- Start the frontend development server
+Ce script va :
+- Démarrer le serveur WebSocket backend
+- Démarrer le générateur de logs
+- Démarrer le serveur de développement frontend
 
-All services will run in separate terminal windows.
+Tous les services s'exécuteront dans des fenêtres de terminal séparées.
 
-### Option 2: Manual Setup
+### Option 2: Configuration Manuelle
 
-#### 1. Backend Setup
+#### 1. Configuration du Backend
 
 ```bash
 cd backend
 
-# Create virtual environment
+# Créer un environnement virtuel
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Sur Windows: venv\Scripts\activate
 
-# Install dependencies
+# Installer les dépendances
 pip install -r requirements.txt
 
-# Create log file
+# Créer le fichier de logs
 touch app.log
 ```
 
-#### 2. Frontend Setup
+#### 2. Configuration du Frontend
 
 ```bash
 cd frontend
 
-# Install dependencies
-npm install  # or: pnpm install
+# Installer les dépendances
+npm install  # ou: pnpm install
 
-# Create environment file
+# Créer le fichier d'environnement
 cp .env.example .env.local
-# Edit .env.local with your configuration
+# Éditer .env.local avec votre configuration
 ```
 
-#### 3. Run the System Manually
+#### 3. Exécuter le Système Manuellement
 
-**Terminal 1 - Start Backend:**
+**Terminal 1 - Démarrer le Backend:**
 ```bash
 cd backend
 source venv/bin/activate
 python integrated_watcher.py
 ```
 
-**Terminal 2 - Generate Test Logs (optional):**
+**Terminal 2 - Générer des Logs de Test (optionnel):**
 ```bash
 cd backend
 source venv/bin/activate
 python generate_test_logs.py
 ```
 
-**Terminal 3 - Start Frontend:**
+**Terminal 3 - Démarrer le Frontend:**
 ```bash
 cd frontend
-npm run dev  # or: pnpm dev
+npm run dev  # ou: pnpm dev
 ```
 
-**Access the Application:**
-Open your browser to: `http://localhost:5173`
+**Accéder à l'Application:**
+Ouvrez votre navigateur à : `http://localhost:5173`
 
-## 📁 Project Structure
+## 📁 Structure du Projet
 
 ```
 .
 ├── backend/
-│   ├── integrated_watcher.py    # Main backend service
-│   ├── websocket_server.py      # Standalone WebSocket server
-│   ├── load_watcher.py           # Original log watcher
-│   ├── generate_test_logs.py    # Test log generator
-│   ├── requirements.txt          # Python dependencies
-│   └── README.md                 # Backend documentation
+│   ├── integrated_watcher.py    # Service backend principal
+│   ├── websocket_server.py      # Serveur WebSocket autonome
+│   ├── load_watcher.py           # Watcher de logs original
+│   ├── generate_test_logs.py    # Générateur de logs de test
+│   ├── requirements.txt          # Dépendances Python
+│   └── README.md                 # Documentation backend
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── lib/                 # Utilities and WebSocket client
-│   │   ├── types/               # TypeScript type definitions
-│   │   └── App.tsx              # Main application
+│   │   ├── components/          # Composants React
+│   │   ├── lib/                 # Utilitaires et client WebSocket
+│   │   ├── types/               # Définitions de types TypeScript
+│   │   └── App.tsx              # Application principale
 │   ├── package.json
 │   └── README.md
 │
-├── BACKEND_FRONTEND_INTEGRATION.md  # Integration documentation
-├── setup.sh                         # Quick setup script
-└── README.md                        # This file
+├── BACKEND_FRONTEND_INTEGRATION.md  # Documentation d'intégration
+├── setup.sh                         # Script de configuration rapide
+└── README.md                        # Ce fichier
 ```
 
 ## 🔧 Configuration
 
-### Backend Configuration
+### Configuration Backend
 
-Create a `.env` file in the `backend/` directory (optional):
+Créer un fichier `.env` dans le répertoire `backend/` (optionnel) :
 
 ```bash
 LOG_PATH=app.log
@@ -157,15 +158,15 @@ CONCURRENCY=4
 POLL_INTERVAL=0.2
 ```
 
-### Frontend Configuration
+### Configuration Frontend
 
-Create `frontend/.env.local` from the example:
+Créer `frontend/.env.local` à partir de l'exemple :
 
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `frontend/.env.local`:
+Éditer `frontend/.env.local` :
 
 ```bash
 VITE_WS_URL=ws://localhost:9001
@@ -175,25 +176,25 @@ VITE_OVH_LLM_ENDPOINT=https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/comp
 VITE_OVH_LLM_MODEL=Meta-Llama-3_3-70B-Instruct
 ```
 
-**Note:** Replace `your_api_key_here` with your actual OVH Cloud AI API key.
+**Note:** Remplacer `your_api_key_here` par votre véritable clé API OVH Cloud AI.
 
-## 🔍 Detected Threats
+## 🔍 Menaces Détectées
 
-The system detects the following security threats:
+Le système détecte les menaces de sécurité suivantes :
 
-| Threat Type          | Severity | Description                                    |
+| Type de Menace       | Sévérité | Description                                    |
 |----------------------|----------|------------------------------------------------|
-| SQL Injection        | Élevé    | Database manipulation attempts                 |
-| XSS                  | Moyen    | Cross-site scripting attacks                   |
-| Brute Force SSH      | Élevé    | SSH password guessing attempts                 |
-| Port Scan            | Faible   | Network reconnaissance                         |
-| Malware Download     | Élevé    | Malicious file download attempts               |
-| DDoS                 | Élevé    | Distributed denial of service                  |
-| Unauthorized Access  | Élevé    | Unauthorized access attempts                   |
+| SQL Injection        | Élevé    | Tentatives de manipulation de base de données  |
+| XSS                  | Moyen    | Attaques de script inter-sites                 |
+| Brute Force SSH      | Élevé    | Tentatives de devinette de mot de passe SSH    |
+| Port Scan            | Faible   | Reconnaissance réseau                          |
+| Malware Download     | Élevé    | Tentatives de téléchargement de fichiers malveillants |
+| DDoS                 | Élevé    | Déni de service distribué                      |
+| Unauthorized Access  | Élevé    | Tentatives d'accès non autorisées              |
 
-## 📡 WebSocket Protocol
+## 📡 Protocole WebSocket
 
-### Messages from Backend to Frontend
+### Messages du Backend vers le Frontend
 
 ```json
 {
@@ -211,7 +212,7 @@ The system detects the following security threats:
 }
 ```
 
-### Messages from Frontend to Backend
+### Messages du Frontend vers le Backend
 
 ```json
 {
@@ -225,108 +226,111 @@ The system detects the following security threats:
 }
 ```
 
-See [BACKEND_FRONTEND_INTEGRATION.md](./BACKEND_FRONTEND_INTEGRATION.md) for complete protocol documentation.
+Voir [BACKEND_FRONTEND_INTEGRATION.md](./BACKEND_FRONTEND_INTEGRATION.md) pour la documentation complète du protocole.
 
-## 🧪 Testing
+## 🧪 Tests
 
-### Generate Test Logs
+### Générer des Logs de Test
 
 ```bash
 cd backend
 python generate_test_logs.py
 ```
 
-This creates realistic security logs including:
-- Normal traffic
-- Port scans
-- SQL injection attempts
-- SSH brute force attacks
-- XSS attempts
-- DDoS attacks
+Cela crée des logs de sécurité réalistes incluant :
+- Trafic normal
+- Scans de ports
+- Tentatives de SQL injection
+- Attaques SSH par force brute
+- Tentatives XSS
+- Attaques DDoS
 
-### Manual Log Injection
+### Injection Manuelle de Logs
 
-Append to `backend/app.log`:
+Ajouter à `backend/app.log` :
 
 ```bash
 echo "2025-11-19 10:00:00 FW-0001 [CRITICAL] SQL injection attempt detected" >> backend/app.log
 ```
 
-## 📊 Features in Detail
+## 📊 Fonctionnalités en Détail
 
 ### Dashboard
-- Real-time request feed
-- Color-coded severity indicators
-- Relative and absolute timestamps
-- Firewall ID tracking
+- Flux de requêtes en temps réel
+- Indicateurs de sévérité codés par couleur
+- Horodatages relatifs et absolus
+- Suivi des ID de firewall
 
 ### Analytics
-- Severity distribution charts
-- Attack type breakdown
-- Trend analysis
-- Request volume metrics
+- Graphiques de distribution de sévérité
+- Répartition par type d'attaque
+- Analyse des tendances
+- Métriques de volume de requêtes
 
-### Fix Application
-- View detailed threat explanations
-- Review suggested fixes
-- Apply fixes via WebSocket
-- Track fix application status
+### Application de Corrections
+- Visualiser les explications détaillées des menaces
+- Examiner les corrections suggérées
+- Appliquer les corrections via WebSocket
+- Suivre le statut d'application des corrections
 
-## 🐛 Troubleshooting
+## 🐛 Dépannage
 
-**WebSocket won't connect:**
-- Ensure backend is running
-- Check port 8080 is not blocked
-- Verify `VITE_WS_URL` in frontend `.env`
+**Le WebSocket ne se connecte pas:**
+- S'assurer que le backend est en cours d'exécution
+- Vérifier que le port 8080 n'est pas bloqué
+- Vérifier `VITE_WS_URL` dans le `.env` frontend
 
-**No alerts appearing:**
-- Verify `app.log` exists and is being written to
-- Check backend console for errors
-- Ensure `USE_LOCAL_MODEL=true`
+**Aucune alerte n'apparaît:**
+- Vérifier que `app.log` existe et est en cours d'écriture
+- Vérifier la console backend pour les erreurs
+- S'assurer que `USE_LOCAL_MODEL=true`
 
-**Import errors:**
-- Activate virtual environment: `source venv/bin/activate`
-- Reinstall dependencies: `pip install -r requirements.txt`
+**Erreurs d'import:**
+- Activer l'environnement virtuel: `source venv/bin/activate`
+- Réinstaller les dépendances: `pip install -r requirements.txt`
 
-## 🤝 Contributing
+## 🤝 Contribution
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+1. Fork le dépôt
+2. Créer une branche de fonctionnalité
+3. Apporter vos modifications
+4. Tester minutieusement
+5. Soumettre une pull request
 
 ## 📝 Documentation
 
-- [Backend README](./backend/README.md) - Backend-specific documentation
-- [Frontend README](./frontend/README.md) - Frontend-specific documentation
-- [Integration Guide](./BACKEND_FRONTEND_INTEGRATION.md) - Type system and protocol details
+- [Backend README](./backend/README.md) - Documentation spécifique au backend
+- [Frontend README](./frontend/README.md) - Documentation spécifique au frontend
+- [Guide d'Intégration](./BACKEND_FRONTEND_INTEGRATION.md) - Système de types et détails du protocole
 
-## 🎯 Future Enhancements
+## 🎯 Améliorations Futures
 
-- [ ] Machine learning-based threat detection
-- [ ] Database persistence
-- [ ] User authentication
+- [ ] Détection de menaces basée sur le machine learning
+- [ ] Persistance en base de données
+- [ ] Authentification utilisateur
 - [ ] TLS/SSL WebSocket (wss://)
-- [ ] Multi-firewall support
-- [ ] Email/SMS notifications
-- [ ] Automated fix application
-- [ ] Historical data analysis
-- [ ] Export reports (PDF, CSV)
+- [ ] Support multi-firewall
+- [ ] Notifications Email/SMS
+- [ ] Application automatisée des corrections
+- [ ] Analyse des données historiques
+- [ ] Export de rapports (PDF, CSV)
 
-## 👥 Team
+## 👥 Équipe
 
 **HACKATHON_CND_TEAM3**
 
-## 📄 License
+## 📄 Licence
 
-[Your License Here]
+[Votre Licence Ici]
 
-## 🙏 Acknowledgments
+## 🙏 Remerciements
 
-- Built for CND Hackathon
+- Développé pour le Hackathon CND
 - Ministère des Armées
 
 ---
 
-**Made with ❤️ for cybersecurity**
+**Fait avec ❤️ pour la France**
+
+
+

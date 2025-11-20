@@ -172,6 +172,32 @@ const RequestCard: React.FC<RequestCardProps> = ({ request, onRemoveRequest }) =
         </div>
       </div>
 
+      {/* Network Information */}
+      {(request.src_ip || request.dst_ip) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {request.src_ip && (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              </svg>
+              <span className="text-sm text-gray-700">
+                <span className="font-medium">Source :</span> {request.src_ip}{request.src_port ? `:${request.src_port}` : ''}
+              </span>
+            </div>
+          )}
+          {request.dst_ip && (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+              <span className="text-sm text-gray-700">
+                <span className="font-medium">Destination :</span> {request.dst_ip}{request.dst_port ? `:${request.dst_port}` : ''}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-2 flex-1">
@@ -352,7 +378,7 @@ const RequestCard: React.FC<RequestCardProps> = ({ request, onRemoveRequest }) =
 
       {/* Solution Modal */}
       {showSolution && request.fix_proposal && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) {

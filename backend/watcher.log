@@ -1,21 +1,39 @@
-2025-11-20 01:29:40,882 INFO 🧠 Chargement du modèle ML...
-2025-11-20 01:29:40,928 INFO ✅ Modèle ML chargé avec succès
-2025-11-20 01:29:40,929 INFO server listening on 0.0.0.0:9001
-2025-11-20 01:29:40,929 INFO WebSocket server started on ws://0.0.0.0:9001
-2025-11-20 01:29:40,929 INFO System ready. Press CTRL+C to stop
-2025-11-20 01:29:40,929 INFO Starting tail on app.log
-2025-11-20 01:29:40,930 INFO Watching for new lines in app.log...
-2025-11-20 01:29:40,930 INFO Worker 0 started
-2025-11-20 01:29:40,930 INFO Worker 1 started
-2025-11-20 01:29:40,930 INFO Worker 2 started
-2025-11-20 01:29:40,930 INFO Worker 3 started
-2025-11-20 01:29:45,741 INFO connection open
-2025-11-20 01:29:45,741 INFO WebSocket client connected from ('127.0.0.1', 34848). Total: 1
-2025-11-20 01:29:45,746 INFO connection open
-2025-11-20 01:29:45,747 INFO WebSocket client connected from ('127.0.0.1', 34850). Total: 2
-2025-11-20 01:29:50,986 INFO ALERT detected by worker 2: 2025-11-20T00:29:50Z,FW-D,51.148.29.61,198.184.45.203,49880,80,TCP,ACCEPT,-832,490,SYN,CNJAEPAIK9HS,,Malicious file detected,ALERT,SYN
-2025-11-20 01:29:50,988 INFO Broadcasted request #1 to 2 clients
-2025-11-20 01:30:04,198 INFO ALERT detected by worker 3: 2025-11-20T00:30:04Z,FW-B,194.159.132.41,82.116.85.140,60079,80,TCP,DROP,4405,9229,URG,JXHC16TQPO00,,Port scanning activity,ALERT,PSH
-2025-11-20 01:30:04,199 INFO Broadcasted request #2 to 2 clients
-2025-11-20 01:30:41,807 INFO ALERT detected by worker 0: 2025-11-20T00:30:41Z,FW-A,49.43.4.141,253.99.221.47,29693,21,TCP,ACCEPT,3110,8416,SYN,L4W2KLLUTI5R,,Malicious file detected,ALERT,
-2025-11-20 01:30:41,812 INFO Broadcasted request #3 to 2 clients
+2025-11-20 10:32:09,815 INFO 🧠 Chargement du modèle ML...
+2025-11-20 10:32:09,858 INFO ✅ Modèle ML chargé avec succès
+2025-11-20 10:32:09,859 INFO server listening on 0.0.0.0:9001
+2025-11-20 10:32:09,859 INFO WebSocket server started on ws://0.0.0.0:9001
+2025-11-20 10:32:09,860 INFO System ready. Press CTRL+C to stop
+2025-11-20 10:32:09,860 INFO Starting tail on app.log
+2025-11-20 10:32:09,860 INFO Watching for new lines in app.log...
+2025-11-20 10:32:09,860 INFO Worker 0 started
+2025-11-20 10:32:09,860 INFO Worker 1 started
+2025-11-20 10:32:09,860 INFO Worker 2 started
+2025-11-20 10:32:09,860 INFO Worker 3 started
+2025-11-20 10:32:10,894 INFO ALERT detected by worker 0: 2025-11-20T09:32:10Z,FW-B,159.83.36.28,137.211.223.61,62854,3389,UDP,DROP,-324,845,RST,K3ED4I75VXU1,,Suspicious payload,ALERT,ACK
+2025-11-20 10:32:10,895 INFO Broadcasted request #1 to 0 clients
+2025-11-20 10:32:12,390 INFO connection open
+2025-11-20 10:32:12,391 INFO WebSocket client connected from ('127.0.0.1', 42906). Total: 1
+2025-11-20 10:32:12,396 INFO connection open
+2025-11-20 10:32:12,397 INFO WebSocket client connected from ('127.0.0.1', 42916). Total: 2
+2025-11-20 10:32:30,121 INFO ALERT detected by worker 1: 2025-11-20T09:32:30Z,FW-D,49.106.80.153,151.129.92.48,65141,22,ICMP,ACCEPT,-799,3307,RST,1QBLKN33D4JC,,Unauthorized endpoint access,ALERT,PSH
+2025-11-20 10:32:30,122 INFO Broadcasted request #2 to 2 clients
+2025-11-20 10:32:34,333 INFO ALERT detected by worker 2: 2025-11-20T09:32:34Z,FW-D,155.227.107.220,180.86.21.176,45152,22,UDP,ACCEPT,3471,4169,URG,UBDDGGCQDADH,,Suspicious payload,ALERT,FIN
+2025-11-20 10:32:34,334 INFO Broadcasted request #3 to 2 clients
+2025-11-20 10:32:49,577 INFO ALERT detected by worker 3: 2025-11-20T09:32:49Z,FW-C,154.253.73.142,244.21.231.122,7043,22,ICMP,DROP,-482,387,URG,4EDJDEF6HBQD,,High traffic volume,ALERT,ACK
+2025-11-20 10:32:49,578 INFO Broadcasted request #4 to 2 clients
+2025-11-20 10:32:58,604 INFO ALERT detected by worker 2: 2025-11-20T09:32:58Z,FW-C,81.227.236.218,51.233.65.131,14783,8080,ICMP,DROP,2368,351,PSH,WDKDYA9V8TXB,,XSS pattern detected,ALERT,ACK
+2025-11-20 10:32:58,604 INFO Broadcasted request #5 to 2 clients
+2025-11-20 10:33:16,871 INFO ALERT detected by worker 3: 2025-11-20T09:33:16Z,FW-D,174.95.76.233,46.243.240.239,6144,443,ICMP,DROP,-453,2358,ACK,APM44QXNNQJP,,Multiple failed SSH attempts,ALERT,SYN
+2025-11-20 10:33:16,872 INFO Broadcasted request #6 to 2 clients
+2025-11-20 10:33:19,861 INFO ALERT detected by worker 1: 2025-11-20T09:33:19Z,FW-A,230.134.1.135,229.14.217.90,6078,3389,ICMP,ACCEPT,1817,772,URG,N1TY9D51QA6B,,Port scanning activity,ALERT,
+2025-11-20 10:33:19,862 INFO Broadcasted request #7 to 2 clients
+2025-11-20 10:33:54,967 INFO ALERT detected by worker 2: 2025-11-20T09:33:54Z,FW-C,131.115.63.233,213.126.79.12,23900,3306,TCP,ACCEPT,4879,5159,PSH,Q7N36IEAYEMB,,Suspicious payload,ALERT,ACK
+2025-11-20 10:33:54,968 INFO Broadcasted request #8 to 2 clients
+2025-11-20 10:34:42,308 INFO ALERT detected by worker 2: 2025-11-20T09:34:42Z,FW-C,193.114.36.106,103.166.171.97,26827,8080,UDP,REJECT,1024,8363,URG,GUNR58PLRIMH,,Malicious file detected,ALERT,PSH
+2025-11-20 10:34:42,308 INFO Broadcasted request #9 to 2 clients
+2025-11-20 10:34:54,945 INFO ALERT detected by worker 2: 2025-11-20T09:34:54Z,FW-A,179.128.172.239,114.250.157.171,27675,8080,ICMP,ACCEPT,1047,7261,RST,BN0LPLJRPLU0,,Multiple failed SSH attempts,ALERT,SYN
+2025-11-20 10:34:54,946 INFO Broadcasted request #10 to 2 clients
+2025-11-20 10:35:10,591 INFO ALERT detected by worker 2: 2025-11-20T09:35:10Z,FW-B,151.177.185.165,135.52.236.14,10631,8080,UDP,DROP,3143,6580,FIN,IC13KQ5IJ65W,,Suspicious payload,ALERT,ACK
+2025-11-20 10:35:10,593 INFO Broadcasted request #11 to 2 clients
+2025-11-20 10:35:13,609 INFO ALERT detected by worker 3: 2025-11-20T09:35:13Z,FW-B,124.114.70.181,54.145.200.238,37769,21,ICMP,ACCEPT,806,740,FIN,CZ3XU6TKYKQF,,Port scanning activity,ALERT,SYN
+2025-11-20 10:35:13,609 INFO Broadcasted request #12 to 2 clients
