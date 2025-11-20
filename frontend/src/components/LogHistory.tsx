@@ -4,14 +4,15 @@ import RequestCard from './request';
 
 interface LogHistoryProps {
   requests: Request[];
+  onRemoveRequest: (index: number) => void;
   autoScroll?: boolean;
 }
 
-const LogHistory: React.FC<LogHistoryProps> = ({ requests }) => {
+const LogHistory: React.FC<LogHistoryProps> = ({ requests, onRemoveRequest }) => {
   const [displayedRequests, setDisplayedRequests] = useState<Request[]>([]);
 
   useEffect(() => {
-    // Remove duplicates by index using Map (keeps latest occurrence)
+    // Remove duplicates by index using Map (keeps first occurrence)
     const uniqueMap = new Map<number, Request>();
     requests.forEach(request => {
       if (!uniqueMap.has(request.index)) {
@@ -19,9 +20,9 @@ const LogHistory: React.FC<LogHistoryProps> = ({ requests }) => {
       }
     });
 
-    // Convert to array, reverse order (latest first), and limit to 50
+    // Convert to array, sort by index descending (highest/latest first), and limit to 50
     const uniqueRequests = Array.from(uniqueMap.values())
-      .reverse()
+      .sort((a, b) => b.index - a.index)
       .slice(0, 50);
 
     setDisplayedRequests(uniqueRequests);
@@ -36,7 +37,7 @@ const LogHistory: React.FC<LogHistoryProps> = ({ requests }) => {
       {displayedRequests.map((request) => {
         return (
           <div key={request.index}>
-            <RequestCard request={request} />
+            <RequestCard request={request} onRemoveRequest={onRemoveRequest} />
           </div>
         );
       })}

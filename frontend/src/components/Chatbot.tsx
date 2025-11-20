@@ -48,9 +48,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ requests = [] }) => {
     try {
       const apiKey = import.meta.env.VITE_OVH_LLM_API_KEY;
       const endpoint = import.meta.env.VITE_OVH_LLM_ENDPOINT || 'https://llama-3-1-8b-instruct.endpoints.kepler.ai.cloud.ovh.net/api/openai_compat/v1/chat/completions';
+      const modelName = import.meta.env.VITE_OVH_LLM_MODEL || 'Llama-3.1-8B-Instruct';
 
       console.log('🔑 API Key présente:', !!apiKey);
       console.log('🔗 Endpoint:', endpoint);
+      console.log('🤖 Model:', modelName);
 
       if (!apiKey) {
         throw new Error('API key not configured');
@@ -77,7 +79,7 @@ Réponds de manière concise et professionnelle en français. Si on te pose une 
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: 'Llama-3.1-8B-Instruct',
+          model: modelName,
           messages: [
             { role: 'system', content: systemPrompt },
             ...messages.filter(m => m.role !== 'assistant' || messages.indexOf(m) >= messages.length - 10).map(m => ({
@@ -134,7 +136,7 @@ Réponds de manière concise et professionnelle en français. Si on te pose une 
       {/* Chatbot Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110"
+        className="fixed bottom-6 right-6 z-50 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
       >
         {isOpen ? (
           <Icon icon="mdi:close" className="w-6 h-6" />
@@ -147,7 +149,7 @@ Réponds de manière concise et professionnelle en français. Si on te pose une 
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-50 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-300">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-2xl">
+          <div className="p-4 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-t-2xl">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-lg">
                 <Icon icon="mdi:robot" className="w-6 h-6" />

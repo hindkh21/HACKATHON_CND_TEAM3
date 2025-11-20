@@ -60,11 +60,24 @@ def generate_log() -> str:
     session_id = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=12))
 
     # Attack info (sometimes include attack patterns)
-    if random.random() < 0.3:  # 30% chance of attack
+    if random.random() < 0.15:  # 15% chance of attack (reduced from 30%)
         attack_type, message = random.choice(ATTACK_TYPES)
         status = "ALERT"
     else:
-        message = "Normal traffic"
+        # Normal traffic messages
+        normal_messages = [
+            "Normal traffic",
+            "Regular HTTP request",
+            "Database query",
+            "File transfer",
+            "API call",
+            "Web browsing",
+            "Email sync",
+            "Software update",
+            "Backup operation",
+            "Health check"
+        ]
+        message = random.choice(normal_messages)
         status = "OK"
 
     # Additional flag

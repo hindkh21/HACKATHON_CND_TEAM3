@@ -40,10 +40,10 @@ const Contact: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="pt-40 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="p-4 md:p-8">
+        <div className="max-w-4xl mx-auto space-y-8 mt-36">
         {/* Header */}
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tight flex items-center gap-3">
             <Icon icon="mdi:contact-mail" className="w-10 h-10" />
             Contactez-nous

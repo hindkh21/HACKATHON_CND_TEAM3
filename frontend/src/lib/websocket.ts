@@ -4,7 +4,7 @@ let reconnectTimeout: number | null = null;
 const RECONNECT_DELAY = 3000; // 3 seconds
 
 export type WebSocketMessage = {
-  type: 'apply_fix' | 'fix_applied' | 'fix_error' | 'new_request';
+  type: 'apply_fix' | 'fix_applied' | 'fix_error' | 'new_request' | 'get_all_logs' | 'all_logs_response' | 'all_logs_error';
   data?: any;
   error?: string;
 };

@@ -4,9 +4,10 @@ import { sendWebSocketMessage, onWebSocketMessage, type WebSocketMessage } from 
 
 interface RequestCardProps {
   request: Request;
+  onRemoveRequest: (index: number) => void;
 }
 
-const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
+const RequestCard: React.FC<RequestCardProps> = ({ request, onRemoveRequest }) => {
   const [showSolution, setShowSolution] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
@@ -31,6 +32,21 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
     };
   }, [request.index]);
 
+  // Handle Escape key to close modals
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowDetails(false);
+        setShowSolution(false);
+      }
+    };
+
+    if (showDetails || showSolution) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [showDetails, showSolution]);
+
   const handleApplySolution = async () => {
     setIsApplying(true);
     setError(false);
@@ -44,7 +60,10 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
           fix_proposal: request.fix_proposal,
         },
       });
-      // Response will be handled by the WebSocket message listener
+      // Remove the request from history after successful send
+      setTimeout(() => {
+        onRemoveRequest(request.index);
+      }, 1000); // Wait 1 second to show success message
     } catch (error) {
       console.error('Error sending fix request via WebSocket:', error);
       setError(true);
@@ -188,12 +207,13 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
       {showDetails && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setShowDetails(false)}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowDetails(false);
+            }
+          }}
         >
-          <div
-            className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
               <div className="flex items-center justify-between">
@@ -332,7 +352,14 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
 
       {/* Solution Modal */}
       {showSolution && request.fix_proposal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowSolution(false);
+            }
+          }}
+        >
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">

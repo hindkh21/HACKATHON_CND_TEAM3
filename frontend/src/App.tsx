@@ -6,13 +6,64 @@ import LogHistory from './components/LogHistory';
 import LogStats from './components/LogStats';
 import Analytics from './components/Analytics';
 import Chatbot from './components/Chatbot';
-import { connectWebSocket, onWebSocketMessage, isWebSocketConnected, type WebSocketMessage } from './lib/websocket';
+import { connectWebSocket, onWebSocketMessage, isWebSocketConnected, sendWebSocketMessage, type WebSocketMessage } from './lib/websocket';
 import logoArmees from './assets/Ministère_des_Armées.svg.png';
 import './App.css';
 
 function App() {
   const [requests, setRequests] = useState<Request[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
+
+  const removeRequest = (index: number) => {
+    setRequests((prev) => prev.filter(r => r.index !== index));
+  };
+
+  const loadAllHistory = () => {
+    setIsLoadingHistory(true);
+
+    // Listen for response
+    const unsubscribe = onWebSocketMessage(async (message: WebSocketMessage) => {
+      if (message.type === 'all_logs_response' && message.data) {
+        const logs = message.data.logs as Request[];
+        console.log(`📚 Received ${logs.length} historical logs`);
+
+        // Generate explanations for logs with raw_log
+        const { generateExplanation } = await import('./lib/llmExplanation');
+        const logsWithExplanations = await Promise.all(
+          logs.map(async (log) => {
+            if (log.raw_log && log.bug_type && !log.explanation) {
+              console.log('🤖 Generating explanation for historical log', log.index);
+              const { explanation, fix_proposal } = await generateExplanation(
+                log.raw_log,
+                log.bug_type,
+                log.severity
+              );
+              return { ...log, explanation, fix_proposal };
+            }
+            return log;
+          })
+        );
+
+        // Merge with existing requests, avoiding duplicates
+        setRequests((prev) => {
+          const existingIndexes = new Set(prev.map(r => r.index));
+          const newLogs = logsWithExplanations.filter(log => !existingIndexes.has(log.index));
+          return [...prev, ...newLogs];
+        });
+
+        setIsLoadingHistory(false);
+        unsubscribe();
+      } else if (message.type === 'all_logs_error') {
+        console.error('Error loading history:', message.data);
+        setIsLoadingHistory(false);
+        unsubscribe();
+      }
+    });
+
+    // Send request
+    sendWebSocketMessage({ type: 'get_all_logs' });
+  };
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -31,13 +82,26 @@ function App() {
     }, 1000);
 
     // Listen for new requests from WebSocket
-    const unsubscribe = onWebSocketMessage((message: WebSocketMessage) => {
+    const unsubscribe = onWebSocketMessage(async (message: WebSocketMessage) => {
       if (message.type === 'new_request' && message.data) {
         const requestData = message.data as Request;
 
         // Convert timestamp string to Date object if needed
         if (typeof requestData.timestamp === 'string') {
           requestData.timestamp = new Date(requestData.timestamp);
+        }
+
+        // Generate explanation with LLM if raw_log is present
+        if (requestData.raw_log && requestData.bug_type) {
+          console.log('🤖 Generating explanation for', requestData.bug_type);
+          const { generateExplanation } = await import('./lib/llmExplanation');
+          const { explanation, fix_proposal } = await generateExplanation(
+            requestData.raw_log,
+            requestData.bug_type,
+            requestData.severity
+          );
+          requestData.explanation = explanation;
+          requestData.fix_proposal = fix_proposal;
         }
 
         // Add to requests - duplicates will be filtered by unique index
@@ -140,7 +204,7 @@ function App() {
               {wsConnected ? (
                 <span>Connexion avec le proxy en direct</span>
               ) : (
-                <span>Déconnecté du proxy,&nbsp;<a href='/contact'>Contacter le support</a></span>
+                <span>Déconnecté du proxy,&nbsp;<a href='/contact' className='underline'>Contacter le support</a></span>
               )}
             </span>
           </div>
@@ -156,12 +220,33 @@ function App() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Historique des requêtes</h2>
-            <div className="text-sm text-muted-foreground">
-              {requests.length} requêtes
+            <div className="flex items-center gap-4">
+              <button
+                onClick={loadAllHistory}
+                disabled={isLoadingHistory || !wsConnected}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                {isLoadingHistory ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Chargement...
+                  </>
+                ) : (
+                  <>
+                    <Icon icon="mdi:history" className="w-4 h-4" />
+                    Afficher tout l'historique
+                  </>
+                )}
+              </button>
+              <div className="text-sm text-muted-foreground">
+                {requests.length} requêtes
+              </div>
             </div>
           </div>
 
-          <LogHistory requests={requests} />
+          <LogHistory requests={requests} onRemoveRequest={removeRequest} />
         </div>
         </div>
       </div>
