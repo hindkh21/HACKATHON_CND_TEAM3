@@ -6,3 +6,5 @@ __pycache__/
 *.csv
 *.xlsx
 test.py
+Data/
+only april/
