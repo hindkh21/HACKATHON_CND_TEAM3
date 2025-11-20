@@ -1,0 +1,33 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    volumes:
+      - app_logs:/app
+    ports:
+      - "9001:9001"
+    environment:
+      - WEBSOCKET_HOST=0.0.0.0
+      - WEBSOCKET_PORT=9001
+      - LOG_PATH=/app/app.log
+      - CONCURRENCY=4
+    restart: unless-stopped
+
+  log-generator:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["python", "generate_test_logs.py"]
+    volumes:
+      - app_logs:/app
+    restart: unless-stopped
+
+volumes:
+  app_logs:
